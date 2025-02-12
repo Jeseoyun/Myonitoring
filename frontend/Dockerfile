@@ -1,5 +1,5 @@
-# Node.js 이미지 선택
-FROM node:18 AS build
+# Node.js 20 버전 사용 (react-router 요구사항 충족)
+FROM node:20 AS build
 
 # 작업 디렉토리 설정
 WORKDIR /app
@@ -7,14 +7,20 @@ WORKDIR /app
 # 패키지 파일 복사
 COPY myonitoring/package*.json ./
 
-# 의존성 설치 및 rollup 모듈 명시적 설치
+# 의존성 설치
 RUN npm install
+
+# rollup 모듈 설치
 RUN npm install @rollup/rollup-linux-x64-gnu
+RUN npm install @heroicons/react
+
+# 이미지 디렉토리 생성 및 복사 (추가)
+COPY myonitoring/src/assets/images /app/src/assets/images
 
 # 전체 프로젝트 파일 복사
 COPY myonitoring/ .
 
-# 빌드 전 캐시 삭제 (선택적)
+# 캐시 제거
 RUN rm -rf node_modules/.cache
 
 # 프로젝트 빌드
@@ -25,6 +31,9 @@ FROM nginx:alpine
 
 # 빌드된 파일 nginx로 복사
 COPY --from=build /app/dist /usr/share/nginx/html
+
+# 이미지 파일 복사 (추가)
+COPY --from=build /app/src/assets/images /usr/share/nginx/html/assets/images
 
 # 포트 노출
 EXPOSE 80
