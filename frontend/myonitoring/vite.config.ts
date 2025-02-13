@@ -35,16 +35,14 @@ export default defineConfig({
       },
     }),
   ],
-  build: {
-    rollupOptions: {
-      external: ['@heroicons/react', '@heroicons/react/24/outline']
-    }
+  //API 수정한 곳임임
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://myonitoring.site',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''), // 필요 시 경로 수정
+      },
+    },
   },
-  resolve: {
-    preserveSymlinks: true,
-    alias: {
-      '@heroicons/react': '@heroicons/react',
-      '@': path.resolve(__dirname, './src')  // 절대 경로로 변경
-    }
-  }
 });
